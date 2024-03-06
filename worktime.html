@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出勤時間計算</title>
+    <script>
+        function calculateWorkHours() {
+            var startHour = document.getElementById("start-hour").value;
+            var startMinute = document.getElementById("start-minute").value;
+            var breakHour = document.getElementById("break-hour").value || 1;
+            var breakMinute = document.getElementById("break-minute").value || 0;
+            var endHour = document.getElementById("end-hour").value;
+            var endMinute = document.getElementById("end-minute").value;
+
+            if (endHour === "" || endMinute === "") {
+                var currentDate = new Date();
+                endHour = currentDate.getHours();
+                endMinute = currentDate.getMinutes();
+            }
+
+            var start = new Date(1970, 0, 1, startHour, startMinute);
+            var end = new Date(1970, 0, 1, endHour, endMinute);
+
+            // 日を跨ぐ場合、退勤時間に1日追加
+            if (end < start) {
+                end.setDate(end.getDate() + 1);
+            }
+
+            var breakTimeInMinutes = (parseFloat(breakHour) * 60 + parseFloat(breakMinute)) * 1000 * 60;
+            var workTime = end - start - breakTimeInMinutes;
+            var hours = Math.floor(workTime / (60 * 60 * 1000));
+            var minutes = Math.floor((workTime % (60 * 60 * 1000)) / (60 * 1000));
+
+            document.getElementById("result").innerText = "実働時間: " + hours + "時間" + minutes + "分";
+        }
+    </script>
+</head>
+<body>
+    <h1>出勤時間計算</h1>
+    <label for="start-hour">出勤時間:</label>
+    <select id="start-hour" required>
+        <option value="">--</option>
+        <script>
+            for (var i = 0; i < 24; i++) {
+                document.write('<option value="' + i + '">' + String(i).padStart(2, '0') + '</option>');
+            }
+        </script>
+    </select>:
+    <select id="start-minute" required>
+        <option value="">--</option>
+        <script>
+            for (var i = 0; i < 60; i++) {
+                document.write('<option value="' + i + '">' + String(i).padStart(2, '0') + '</option>');
+            }
+        </script>
+    </select><br>
+    <label for="break-hour">休憩時間:</label>
+    <input type="number" id="break-hour" value="1" required style="width: 50px;">h
+    <input type="number" id="break-minute" value="00" required style="width: 50px;">m<br>
+    <label for="end-hour">退勤時間:</label>
+    <select id="end-hour">
+        <option value="">--</option>
+        <script>
+            for (var i = 0; i < 24; i++) {
+                document.write('<option value="' + i + '">' + String(i).padStart(2, '0') + '</option>');
+            }
+        </script>
+    </select>:
+    <select id="end-minute">
+        <option value="">--</option>
+        <script>
+            for (var i = 0; i < 60; i++) {
+                document.write('<option value="' + i + '">' + String(i).padStart(2, '0') + '</option>');
+            }
+        </script>
+    </select><br>
+    <button onclick="calculateWorkHours()">計算</button>
+    <p id="result"></p>
+</body>
+</html>
